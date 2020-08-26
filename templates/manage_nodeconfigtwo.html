@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>manage_nodeconfig</title>
+</head>
+<body>
+<form method="POST">
+    {{ nodeconfigformset.management_form }}
+    <table>
+        {% for form in nodeconfigformset %}
+            {{ form }}
+        {% endfor %}
+    </table>
+</form>
+
+</body>
+</html>

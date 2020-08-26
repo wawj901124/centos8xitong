@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0242b079-01a7-44f7-8bce-18e2a67d1c51" name="centos8" url="http://192.168.1.102:8000">
+        <fileTransfer accessType="SFTP" host="192.168.1.102" port="22" sshConfigId="fff82315-f630-436c-971e-b22778d31b2f" sshConfig="root@192.168.1.102:22 password">
+          <advancedOptions>
+            <advancedOptions controlEncoding="utf-8" dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

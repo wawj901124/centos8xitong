@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}
+    clickandback
+{% endblock %}
+{% block action_url %}
+    {% url 'shucaiyidate:node_config_add' %}
+{% endblock %}
+{% block box_h1_title %}
+    添加数据
+{% endblock %}
+{% block table_data %}
+    {{ nodeconfigform.as_p }}
+    <fieldset>
+        <legend>NodeConfig ConfigCollectSendCmd</legend>
+        {{ configcollectsendcmd_formset.management_form }}
+        {{ configcollectsendcmd_formset.non_form_errors }}
+        {% for form in configcollectsendcmd_formset %}
+            <table>
+                        {{ form }}
+            </table>
+
+            {{ form.name.errors }}
+            {{ form.name.label_tag }}
+            {{ form.name }}
+        {% endfor %}
+    </fieldset>
+{% endblock %}
+{% block box2_a %}
+    <a href='{{ django_server_yuming }}/shucaiyidate/nodeconfig/'>返回数据列表页</a>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}
+    clickandback
+{% endblock %}
+{% block action_url %}
+    {% url 'shucaiyidate:manage_node_config' %}
+{% endblock %}
+{% block box_h1_title %}
+    添加数据
+{% endblock %}
+{% block table_data %}
+       {{ nodeconfigformset.management_form }}
+    <table>
+        {% for form in nodeconfigformset %}
+            {{ form }}
+        {% endfor %}
+    </table>
+{% endblock %}
+{% block box2_a %}
+    <a href='{{ django_server_yuming }}/shucaiyidate/nodeconfig/'>返回数据列表页</a>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>add</title>
+</head>
+<body>
+<h1>Add</h1>
+<form action="." method="post">
+    {% csrf_token %}
+    {{ nodeconfigform.as_p }}
+    <fieldset>
+        <legend>NodeConfig ConfigCollectSendCmd</legend>
+        {{ configcollectsendcmd_formset.management_form }}
+        {{ configcollectsendcmd_formset.non_form_errors }}
+        {% for form in configcollectsendcmd_formset %}
+            {{ form }}
+            {{ form.name.errors }}
+            {{ form.name.label_tag }}
+            {{ form.name }}
+        {% endfor %}
+    </fieldset>
+
+    <input type="submit" value="Add nodeconfig" class="submit-row"/>
+
+</form>
+
+</body>
+</html>
