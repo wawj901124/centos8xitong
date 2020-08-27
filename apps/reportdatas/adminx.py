@@ -127,6 +127,6 @@ class PageLoadTimeReportAdmin(object):
 
 
 
-xadmin.site.register(Report, ReportAdmin) #在xadmin中注册Report
-xadmin.site.register(RequestReport, RequestReportAdmin) #在xadmin中注册RequestReport
-xadmin.site.register(PageLoadTimeReport, PageLoadTimeReportAdmin) #在xadmin中注册PageLoadTimeReport
+# xadmin.site.register(Report, ReportAdmin) #在xadmin中注册Report
+# xadmin.site.register(RequestReport, RequestReportAdmin) #在xadmin中注册RequestReport
+# xadmin.site.register(PageLoadTimeReport, PageLoadTimeReportAdmin) #在xadmin中注册PageLoadTimeReport
