@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import sys   #导入sys
+sys.setrecursionlimit(1000000) #设置递归深度值，例如这里设置为一百万，默认为900或者100
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   #获取项目根目录
@@ -243,7 +244,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')    #MEDIA_ROOT只能设置一个，
 
 DJANGO_SERVER_YUMING = "http://192.168.1.102:8000"   #配置服务域名，用于某些页面跳转配置，此处定义便于统一管理
 
-INTERNAL_IPS = ['192.168.1.103','192.168.1.100']   # debug_toolbar设置访问的IP地址，只有这个IP地址访问网站时，才会展示，其他任何IP访问都会不展示
+INTERNAL_IPS = ['192.168.1.102','192.168.1.100']   # debug_toolbar设置访问的IP地址，只有这个IP地址访问网站时，才会展示，其他任何IP访问都会不展示
 DEBUG_TOOLBAR_PANELS = [   #debug_toolbar 面板显示设置
     'debug_toolbar.panels.versions.VersionsPanel', # 代表是哪个django版本
     'debug_toolbar.panels.timer.TimerPanel',# 用来计时的，判断加载当前页面总共花的时间
