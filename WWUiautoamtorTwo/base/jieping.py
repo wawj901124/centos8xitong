@@ -1,6 +1,6 @@
 from PIL import Image   #导入Image
 
-def getBuFenImage(wholeimagepath,point_x=298,point_y=806,kongjian_width=190,kongjian_height=50):
+def getBuFenImage(wholeimagepath,point_x=938,point_y=930,kongjian_width=96,kongjian_height=34):
     pageScreenshotpath = wholeimagepath  # 获取整个页面截图
     # # location = ele.location   #获取验证码x,y轴坐标   #截取了BUSINESS
     # location = ele.location_once_scrolled_into_view  # 获取元素x,y轴坐标   #消除self.driver.execute_script("arguments[0].scrollIntoView();", ele) 对截图的影响 截取了login imgae
@@ -16,10 +16,10 @@ def getBuFenImage(wholeimagepath,point_x=298,point_y=806,kongjian_width=190,kong
     # currentfilepath = self.getCurrentFilePath()
     # firedir = r'%s/imagefile/ele' % currentfilepath
     # self.createdir(firedir)
-    eleimage = "elejinribuzaixianshi.png"
+    eleimage = "elecaishou.png"
     imageScreen.save(eleimage)  # 保存控件截图
     # self.outPutMyLog('获取到的元素的截图路径为：%s' % eleimage)
     return eleimage
 
 
-getBuFenImage(wholeimagepath=r'D:\PycharmProjects\centos8xitong\WWUiautoamtorTwo\prepicture\mimizhaohuanone.png')
+getBuFenImage(wholeimagepath=r'D:\PycharmProjects\centos8xitong\WWUiautoamtorTwo\prepicture\caishou.png')

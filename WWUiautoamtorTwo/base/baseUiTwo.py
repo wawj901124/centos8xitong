@@ -394,21 +394,25 @@ class BaseFrame(object):
                 self.outPutMyLog("已经创建目录：%s" % zuhefiledir)
     #对比两张图片
     def comparePicture(self,acturePic,prePic,prebilv):
-        acture_pic_path = str(acturePic)
-        print("实际图片路径：%s"% acture_pic_path)
-        pre_pic_path = str(prePic)
-        print("参照图片路径：%s"% pre_pic_path)
-        ci = CompareImage()
-        acture_bilv = ci.compare_image(acture_pic_path, pre_pic_path)
-        self.outPutMyLog("图片相似度：%s" % str(acture_bilv))
-        bilv = prebilv
-        if acture_bilv>=bilv:
-            self.outPutMyLog("图片相似度【%s】 比预期相似度【%s】高或一样" % (str(acture_bilv),str(bilv)))
-            self.outPutMyLog("返回【True】")
-            return True
-        else:
-            self.outPutMyLog("图片相似度【%s】 比预期相似度【%s】低" % (str(acture_bilv),str(bilv)))
-            self.outPutMyLog("返回【False】")
+        try:
+            acture_pic_path = str(acturePic)
+            print("实际图片路径：%s"% acture_pic_path)
+            pre_pic_path = str(prePic)
+            print("参照图片路径：%s"% pre_pic_path)
+            ci = CompareImage()
+            acture_bilv = ci.compare_image(acture_pic_path, pre_pic_path)
+            self.outPutMyLog("图片相似度：%s" % str(acture_bilv))
+            bilv = prebilv
+            if acture_bilv>=bilv:
+                self.outPutMyLog("图片相似度【%s】 比预期相似度【%s】高或一样" % (str(acture_bilv),str(bilv)))
+                self.outPutMyLog("返回【True】")
+                return True
+            else:
+                self.outPutMyLog("图片相似度【%s】 比预期相似度【%s】低" % (str(acture_bilv),str(bilv)))
+                self.outPutMyLog("返回【False】")
+                return False
+        except Exception as e:
+            self.outPutErrorMyLog("对比出错，原因是【%s】"% str(e))
             return False
 
     #等待10秒，截图对比，达到一定预期后，点击
@@ -429,8 +433,8 @@ class BaseFrame(object):
                 bf.delaytime(5)
                 zaici_act_shouye_jietu = self.getScreenshotNormal()
                 is_continue_one = self.comparePicture(acturePic=zaici_act_shouye_jietu, prePic=pre_shouye, prebilv=prebilv)
-                if while_count >20:
-                    self.outPutMyLog("已经循环判断了20次")
+                if while_count >10:
+                    self.outPutMyLog("已经循环判断了10次")
                     self.outPutMyLog("判断是否出现排队")
                     act_paidu_path = self.get_paidui_bufen_image(wholeimagepath=zaici_act_shouye_jietu)
                     current_file_path = self.getCurrentFilePath()
@@ -439,11 +443,11 @@ class BaseFrame(object):
                     if is_paidu:
                         self.outPutErrorMyLog("显示正在排队，需要重新进行启动应用操作")
                         return '正在排队'
-                if while_count >50:
-                    self.outPutMyLog("已经循环超过了50次")
+                if while_count >15:
+                    self.outPutMyLog("已经循环超过了15次")
                     self.outPutMyLog("等待太久，返回正在排队，用于重启")
                     return '正在排队'
-
+            self.outPutMyLog("完成第%s次循环"%str(while_count))
             while_count=while_count+1
 
         return act_shouye_jietu
@@ -453,7 +457,7 @@ class BaseFrame(object):
     #等待10秒，截图对比，达到一定预期后，点击,对比的是截取的区域块
     def wait_and_compare_bufenimage_and_click(self,preimage,prebilv,clickpoint_x,clickpoint_y,
                                               jiepingpoint_x,jiepingpoint_y,
-                                              jiepingkongjian_width,jiepingkongjian_height):
+                                              jiepingkongjian_width,jiepingkongjian_height,is_for_coutinue=False):
         self.delaytime(5)  # 等待5秒
         pre_shouye =preimage
         act_shouye_jietu = self.getScreenshotNormalBuFenImage(point_x=jiepingpoint_x,
@@ -476,8 +480,8 @@ class BaseFrame(object):
                                                               kongjian_width=jiepingkongjian_width,
                                                               kongjian_height=jiepingkongjian_height)
                 is_continue_one = self.comparePicture(acturePic=zaici_act_shouye_jietu, prePic=pre_shouye, prebilv=prebilv)
-                if while_count >20:
-                    self.outPutMyLog("已经循环判断了20次")
+                if while_count >10:
+                    self.outPutMyLog("已经循环判断了10次")
                     self.outPutMyLog("判断是否出现排队")
                     act_paidu_path = self.get_paidui_bufen_image(wholeimagepath=zaici_act_shouye_jietu)
                     current_file_path = self.getCurrentFilePath()
@@ -486,11 +490,14 @@ class BaseFrame(object):
                     if is_paidu:
                         self.outPutErrorMyLog("显示正在排队，需要重新进行启动应用操作")
                         return '正在排队'
-                if while_count >50:
-                    self.outPutMyLog("已经循环超过了50次")
+                if while_count >15:
+                    self.outPutMyLog("已经循环超过了15次")
+                    if is_for_coutinue:
+                        self.outPutMyLog("返回继续往下")
+                        return '继续往下'
                     self.outPutMyLog("等待太久，返回正在排队，用于重启")
                     return '正在排队'
-
+            self.outPutMyLog("完成第%s次循环" % str(while_count))
             while_count=while_count+1
 
         return act_shouye_jietu
@@ -697,48 +704,55 @@ if __name__ == "__main__":
                 bf.delaytime(2)
 
 
-            # 秘密召唤1
-            bf.delaytime(20)  #等待5秒
-            #秘密召唤
-            pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
-            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-                                                                     clickpoint_x=1740,clickpoint_y=240,
-                                                                     jiepingpoint_x=298,
-                                                                     jiepingpoint_y=806,
-                                                                     jiepingkongjian_width=190,
-                                                                     jiepingkongjian_height=50)     #点击秘密召唤中的x,关闭图片
+            # # 秘密召唤1
+            # bf.delaytime(20)  #等待5秒
+            # #秘密召唤
+            # pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
+            # is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
+            #                                                          clickpoint_x=1740,clickpoint_y=240,
+            #                                                          jiepingpoint_x=298,
+            #                                                          jiepingpoint_y=806,
+            #                                                          jiepingkongjian_width=190,
+            #                                                          jiepingkongjian_height=50)     #点击秘密召唤中的x,关闭图片
+            # if str(is_paidu_text) == '正在排队':
+            #     bf.outPutErrorMyLog("正在排队，重新开始")
+            #     continue
+
+
+            for i in range(0,2):   #给2次，点击弹出的弹框
+                #突破200万，中秋祭典
+                # 中秋祭典
+                bf.delaytime(5)  #等待5秒
+                #中秋祭典
+                pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
+                is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
+                                                                         clickpoint_x=1740,clickpoint_y=240,
+                                                                         jiepingpoint_x=298,
+                                                                         jiepingpoint_y=806,
+                                                                         jiepingkongjian_width=190,
+                                                                         jiepingkongjian_height=50,
+                                                                         is_for_coutinue=True)   #点击中秋祭典中的x,关闭图片
+                if str(is_paidu_text) == '正在排队':
+                    bf.outPutErrorMyLog("正在排队，重新开始")
+                    break   #终止for循环
+
             if str(is_paidu_text) == '正在排队':
                 bf.outPutErrorMyLog("正在排队，重新开始")
                 continue
 
-
-            # 中秋祭典
-            bf.delaytime(5)  #等待5秒
-            #中秋祭典
-            pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
-            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-                                                                     clickpoint_x=1740,clickpoint_y=240,
-                                                                     jiepingpoint_x=298,
-                                                                     jiepingpoint_y=806,
-                                                                     jiepingkongjian_width=190,
-                                                                     jiepingkongjian_height=50)   #点击中秋祭典中的x,关闭图片
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            # 激进的圣光
-            bf.delaytime(5)  #等待5秒
-            #激进的圣光
-            pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
-            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-                                                                     clickpoint_x=1740,clickpoint_y=240,
-                                                                     jiepingpoint_x=298,
-                                                                     jiepingpoint_y=806,
-                                                                     jiepingkongjian_width=190,
-                                                                     jiepingkongjian_height=50)   #点击激进的圣光中x,关闭图片
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
+            # # 激进的圣光
+            # bf.delaytime(5)  #等待5秒
+            # #激进的圣光
+            # pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
+            # is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
+            #                                                          clickpoint_x=1740,clickpoint_y=240,
+            #                                                          jiepingpoint_x=298,
+            #                                                          jiepingpoint_y=806,
+            #                                                          jiepingkongjian_width=190,
+            #                                                          jiepingkongjian_height=50)   #点击激进的圣光中x,关闭图片
+            # if str(is_paidu_text) == '正在排队':
+            #     bf.outPutErrorMyLog("正在排队，重新开始")
+            #     continue
 
             # # # 升级祝福礼
             # bf.delaytime(5)  #等待5秒
@@ -754,7 +768,12 @@ if __name__ == "__main__":
             bf.delaytime(5)  #等待5秒
             #采收
             pre_shouye = '%s/prepicture/caishou.png'%current_file_path
-            is_paidu_text =bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.1,point_x=892,point_y=1005)   #点击采收
+            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.7,
+                                                                         clickpoint_x=892,clickpoint_y=1005,
+                                                                         jiepingpoint_x=938,
+                                                                         jiepingpoint_y=930,
+                                                                         jiepingkongjian_width=96,
+                                                                         jiepingkongjian_height=34)   #点击采收
             if str(is_paidu_text) == '正在排队':
                 bf.outPutErrorMyLog("正在排队，重新开始")
                 continue
@@ -813,6 +832,32 @@ if __name__ == "__main__":
                 continue
 
             break  #终止循环
+
+            #滑动
+            di_x = 1497
+            di_y = 574
+            ding_x = di_x
+            ding_y = 85
+            self.d.swipe(di_x, di_y, ding_x, ding_y, 2)
+
+            #升级三技能
+            #点击升级一技能，直到
+            bf.delaytime(5)  #等待5秒
+            #升级一技能
+            pre_shouye = '%s/prepicture/shengjijinengone.png'%current_file_path
+            quedingimage =  '%s/prepicture/queding.png'%current_file_path
+            is_paidu_text =bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797, point_y=305, quedingimage=quedingimage)
+            if str(is_paidu_text) == '正在排队':
+                bf.outPutErrorMyLog("正在排队，重新开始")
+                continue
+
+            #回去滑动
+            di_x = 1497
+            di_y = 85
+            ding_x = di_x
+            ding_y = 574
+            self.d.swipe(di_x, di_y, ding_x, ding_y, 2)
+
 
         bf.outPutMyLog('成功完成')
 
