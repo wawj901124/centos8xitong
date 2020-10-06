@@ -1,4 +1,4 @@
-¡¡¡¡1. °²×°pycharm-professional-2020.1.exe, Æô¶¯ÄãµÄIDE£¬Èç¹ûÉÏÀ´¾ÍĞèÒª×¢²á£¬Ñ¡Ôñ£ºÊÔÓÃ£¨Evaluate for free£©½øÈëIDE¡£
-¡¡¡¡2. ½«jetbrains-agent-latest.zipÍÏ½øIDE´°¿Ú£¨»òÕßµ±×÷IDE²å¼ş°²×°£©£¬µã "Restart" °´Å¥ÖØÆôIDE¡£
-¡¡¡¡3. ÔÚµ¯³öµÄJetbrainsAgent Helper¶Ô»°¿òÖĞ£¬µã»÷Îª PyCharm°²×° °´Å¥¡£
-¡¡¡¡4. ÖØÆôIDE£¬¸ã¶¨¡£
+ã€€ã€€1. å®‰è£…pycharm-professional-2020.1.exe, å¯åŠ¨ä½ çš„IDEï¼Œå¦‚æœä¸Šæ¥å°±éœ€è¦æ³¨å†Œï¼Œé€‰æ‹©ï¼šè¯•ç”¨ï¼ˆEvaluate for freeï¼‰è¿›å…¥IDEã€‚
+ã€€ã€€2. å°†jetbrains-agent-latest.zipæ‹–è¿›IDEçª—å£ï¼ˆæˆ–è€…å½“ä½œIDEæ’ä»¶å®‰è£…ï¼‰ï¼Œç‚¹ "Restart" æŒ‰é’®é‡å¯IDEã€‚
+ã€€ã€€3. åœ¨å¼¹å‡ºçš„JetbrainsAgent Helperå¯¹è¯æ¡†ä¸­ï¼Œç‚¹å‡»ä¸º PyCharmå®‰è£… æŒ‰é’®ã€‚
+ã€€ã€€4. é‡å¯IDEï¼Œæå®šã€‚
