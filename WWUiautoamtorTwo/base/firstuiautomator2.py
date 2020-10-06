@@ -5,6 +5,7 @@ import os
 d = u2.connect_adb_wifi("192.168.1.100:5555")
 print(d.info)
 
-adbstartappcmd = "adb shell am start com.superhgame.rpg.emma/com.prime31.UnityPlayerNativeActivity"
-os.popen(adbstartappcmd)
+# adbstartappcmd = "adb shell am start com.superhgame.rpg.emma/com.prime31.UnityPlayerNativeActivity"
+# # os.popen(adbstartappcmd)
+d.screenshot("10.png")
 

@@ -25,8 +25,8 @@ class CompareImage():
         return score
 
 if __name__ == '__main__':
-    acture_pic_path = "D:/PycharmProjects/shangbaogongju/WWUiautoamtorTwo/base/comparepictures/acturepicture/20200613220540.png"
-    pre_pic_path = "D:/PycharmProjects/shangbaogongju/WWUiautoamtorTwo/base/comparepictures/prepicture/exception/badnetwork.png"
+    acture_pic_path = "D:\PycharmProjects\centos8xitong\WWUiautoamtorTwo\prepicture\jinruyouxi.png"
+    pre_pic_path = "D:\PycharmProjects\centos8xitong\WWUiautoamtorTwo\screenshots\screenpicture_20201003155605.png"
 
     compare_image = CompareImage()
     compare_image.compare_image(acture_pic_path, pre_pic_path)
