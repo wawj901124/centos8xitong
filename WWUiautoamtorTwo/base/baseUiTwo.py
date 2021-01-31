@@ -430,7 +430,7 @@ class BaseFrame(object):
             else:
                 # 重启
                 print("等待5秒，再次截图对比")
-                bf.delaytime(5)
+                self.delaytime(5)
                 zaici_act_shouye_jietu = self.getScreenshotNormal()
                 is_continue_one = self.comparePicture(acturePic=zaici_act_shouye_jietu, prePic=pre_shouye, prebilv=prebilv)
                 if while_count >10:
@@ -474,7 +474,7 @@ class BaseFrame(object):
             else:
                 # 重启
                 print("等待5秒，再次截图对比")
-                bf.delaytime(5)
+                self.delaytime(5)
                 zaici_act_shouye_jietu = self.getScreenshotNormalBuFenImage(point_x=jiepingpoint_x,
                                                               point_y=jiepingpoint_y,
                                                               kongjian_width=jiepingkongjian_width,
@@ -543,11 +543,38 @@ class BaseFrame(object):
         eleimage = self.getBuFenImage(wholeimagepath,point_x,point_y,kongjian_width,kongjian_height)
         return eleimage
 
-    #判断排队，然后杀死应用重启
-    #技能点1处的截图
-    def get_jinengdian_one_bufen_image(self,wholeimagepath,point_x=1714,point_y=211,kongjian_width=174,kongjian_height=112):
-        eleimage = self.getBuFenImage(wholeimagepath,point_x,point_y,kongjian_width,kongjian_height)
+    # #获取  #判断排队，然后杀死应用重启
+    # #技能点1处的截图
+    # def get_jinengdian_one_bufen_image(self,wholeimagepath):
+    #     wholeimagepath = self.getScreenshotNormal()
+    #     eleimage = self.getBuFenImage(wholeimagepath,point_x=86,point_y=36,kongjian_width=190,kongjian_height=110)
+    #     return eleimage
+
+
+    #获取技能1的【升级】截图函数
+    def get_jineng_one_shengji_image(self):
+        wholeimagepath = self.getScreenshotNormal()
+        eleimage = self.getBuFenImage(wholeimagepath,point_x=1740,point_y=220,kongjian_width=86,kongjian_height=36)
         return eleimage
+
+    #获取技能1的【当前最高或技能点不足】截图函数
+    def get_jineng_one_dangqianzuigao_image(self):
+        wholeimagepath = self.getScreenshotNormal()
+        eleimage = self.getBuFenImage(wholeimagepath,point_x=1690,point_y=210,kongjian_width=190,kongjian_height=110)
+        return eleimage
+
+    #获取技能2的【升级】截图函数
+    def get_jineng_two_shengji_image(self):
+        wholeimagepath = self.getScreenshotNormal()
+        eleimage = self.getBuFenImage(wholeimagepath,point_x=1740,point_y=464,kongjian_width=86,kongjian_height=36)
+        return eleimage
+
+    #获取技能2的【当前最高或技能点不足】截图函数
+    def get_jineng_two_dangqianzuigao_image(self):
+        wholeimagepath = self.getScreenshotNormal()
+        eleimage = self.getBuFenImage(wholeimagepath,point_x=1690,point_y=452,kongjian_width=190,kongjian_height=110)
+        return eleimage
+
 
 
     #点击技能升级操作，
@@ -562,7 +589,7 @@ class BaseFrame(object):
 
         while is_countinue:
             self.d.click(point_x,point_y)  #点击
-            bf.delaytime(2)  #停顿2秒
+            self.delaytime(2)  #停顿2秒
             dianjihoujietu = self.getScreenshotNormal()
             again_act_queding = self.getBuFenImage(wholeimagepath=dianjihoujietu)   #检查是否有确定图标
             is_same = self.comparePicture(acturePic=quedingimage, prePic=again_act_queding, prebilv=0.95)
@@ -581,10 +608,94 @@ class BaseFrame(object):
 
         self.outPutMyLog("技能升级完成")
 
+
+    #处理升级技能1
+    def handle_jineng_one(self):
+
+        jinengone_quyu_image = self.get_jineng_one_shengji_image()
+
+        current_file_path = self.getCurrentFilePath()
+        pre_shouye = '%s/prepicture/jinnengshengji.png' % current_file_path
+        is_click_shengji = self.comparePicture(acturePic=jinengone_quyu_image, prePic=pre_shouye, prebilv=0.9)
+        if is_click_shengji:   #如果可以升级，点击升级
+            clickpoint_x = 1797
+            clickpoint_y =305
+            self.clickGuDingDian(clickpoint_x,clickpoint_y)
+            self.outPutMyLog('点击升级技能')
+            self.delaytime(2)
+            return '升级技能1'
+
+        act_jinengdianbuzu_image = self.get_jineng_one_dangqianzuigao_image()
+        pre_jinengdianbuzu = '%s/prepicture/jinnengdianbuzu.png' % current_file_path
+        is_jinengdianbuzu = self.comparePicture(acturePic=act_jinengdianbuzu_image, prePic=pre_jinengdianbuzu, prebilv=0.9)
+        if is_jinengdianbuzu:   #如果是技能点不足，则退出循环
+            self.outPutMyLog('节能点已经用完，技能点不足')
+            return '技能点不足'
+
+        pre_danqianzuigao = '%s/prepicture/dangqianzuigao.png' % current_file_path
+        is_dangqianzuigao = self.comparePicture(acturePic=act_jinengdianbuzu_image, prePic=pre_danqianzuigao, prebilv=0.9)
+        if is_dangqianzuigao:   #如果是当前最高，则换下一个人，退出当前循环
+            is_xiayige_ren = True
+            self.outPutMyLog('当前最高，下一个')
+            return '当前最高'
+            #升级二技能或者下一个人
+
+        #对比是否存在排队提示
+        #整个截图
+        whole_image = self.getScreenshotNormal()
+        act_paidu_path = self.get_paidui_bufen_image(wholeimagepath=whole_image)
+        current_file_path = self.getCurrentFilePath()
+        pre_paidu_path = '%s/prepicture/paidui.png' % current_file_path
+        is_paidu = self.comparePicture(acturePic=act_paidu_path, prePic=pre_paidu_path, prebilv=0.9)
+        if is_paidu:
+            self.outPutErrorMyLog("显示正在排队，需要重新进行启动应用操作")
+            return '正在排队'
+
+    # 处理升级技能2
+    def handle_jineng_two(self):
+
+        jinengone_quyu_image = self.get_jineng_two_shengji_image()  #获取技能二升级区域
+
+        current_file_path = self.getCurrentFilePath()
+
+        pre_shouye = '%s/prepicture/jinengtwo/jinnengshengjitwo.png' % current_file_path
+        is_click_shengji = self.comparePicture(acturePic=jinengone_quyu_image, prePic=pre_shouye, prebilv=0.9)
+        if is_click_shengji:  # 如果可以升级，点击升级
+            clickpoint_x = 1797
+            clickpoint_y = 305
+            self.clickGuDingDian(clickpoint_x, clickpoint_y)
+            self.outPutMyLog('点击升级技能')
+            self.delaytime(2)
+            return '升级技能2'
+
+        act_jinengdianbuzu_image = self.get_jineng_two_dangqianzuigao_image()
+        pre_jinengdianbuzu = '%s/prepicture/jinengtwo/jinengdianbuzutwo.png' % current_file_path
+        is_jinengdianbuzu = self.comparePicture(acturePic=act_jinengdianbuzu_image, prePic=pre_jinengdianbuzu,
+                                                prebilv=0.9)
+        if is_jinengdianbuzu:  # 如果是技能点不足，则退出循环
+            self.outPutMyLog('节能点已经用完，技能点不足')
+            return '技能点不足'
+
+        pre_danqianzuigao = '%s/prepicture/jinengtwo/jinnengdangqianzuigaotwo.png' % current_file_path
+        is_dangqianzuigao = self.comparePicture(acturePic=act_jinengdianbuzu_image, prePic=pre_danqianzuigao,
+                                                prebilv=0.9)
+        if is_dangqianzuigao:  # 如果是当前最高，则换下一个人，退出当前循环
+            is_xiayige_ren = True
+            self.outPutMyLog('当前最高，下一个')
+            return '当前最高'
+            # 升级二技能或者下一个人
+
+
+
     #屏幕亮屏
     def liangping(self):
         self.d.screen_on()
         self.outPutMyLog("点亮屏幕")
+
+    #屏幕灭屏
+    def meiping(self):
+        self.d.screen_off()
+        self.outPutMyLog("熄灭屏幕")
 
     #获取设备信息
     def get_info_dict(self):
@@ -640,6 +751,328 @@ class BaseFrame(object):
         self.outPutMyLog("从低点【%s,%s】滑动到顶点【%s,%s】"%(str(di_x),str(di_y),str(ding_x),str(ding_y)))
 
 
+class CaiJiClass(object):
+    def __init__(self,outdevice=None, apppacakagename=None, isusb=None):
+        self.outdevice = outdevice
+        self.apppacakagename = apppacakagename
+        self.bf = BaseFrame(outdevice=self.outdevice, apppacakagename=self.apppacakagename)
+        self.returntext = ''
+
+    def jiuRuZhuYe(self):
+        bf = self.bf
+        bf.outPutMyLog('开始执行')
+        is_liangping = bf.is_liang_ping()
+        bf.delaytime(2)
+        if is_liangping:
+            pass
+        else:
+            bf.liangping()  # 亮屏
+            bf.delaytime(2)
+            bf.from_down_to_up()  # 上划解锁
+            bf.delaytime(2)
+
+        bf.startapp()  # 启动应用
+        # 判断是否加载出主页面
+        # 截屏
+        bf.delaytime(20)  # 等待5秒
+        current_file_path = bf.getCurrentFilePath()
+        pre_shouye = '%s/prepicture/shouye.png' % current_file_path
+        is_paidu_text = bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.9, point_x=10, point_y=10)  # 首页点击
+        if str(is_paidu_text) == '正在排队' or str(is_paidu_text) == '重新启动':
+            bf.outPutErrorMyLog("正在排队，重新开始")
+            self.returntext = '重新主循环'
+            return '重新主循环'
+
+        bf.delaytime(20)  # 等待5秒
+        # 进入游戏点击
+        pre_shouye = '%s/prepicture/jinruyouxi.png' % current_file_path
+        is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye, prebilv=0.9,
+                                                                 clickpoint_x=936, clickpoint_y=1000,
+                                                                 jiepingpoint_x=798,
+                                                                 jiepingpoint_y=975,
+                                                                 jiepingkongjian_width=312,
+                                                                 jiepingkongjian_height=87)  # 点击进入游戏
+        if str(is_paidu_text) == '正在排队' or str(is_paidu_text) == '重新启动':
+            bf.outPutErrorMyLog("正在排队，重新开始")
+            self.returntext = '重新主循环'
+            return '重新主循环'
+
+        bf.delaytime(20)  # 等待5秒
+
+        # 有三个登录领取礼包
+        for i in range(0, 5):
+            bf.clickGuDingDian(1809, 251)
+            bf.delaytime(2)
+            bf.clickGuDingDian(1855, 86)
+            bf.delaytime(2)
+            bf.clickGuDingDian(1855, 86)
+            bf.delaytime(2)
+
+        # # 秘密召唤1
+        # bf.delaytime(20)  #等待5秒
+        # #秘密召唤
+        # pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
+        # is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
+        #                                                          clickpoint_x=1740,clickpoint_y=240,
+        #                                                          jiepingpoint_x=298,
+        #                                                          jiepingpoint_y=806,
+        #                                                          jiepingkongjian_width=190,
+        #                                                          jiepingkongjian_height=50)     #点击秘密召唤中的x,关闭图片
+        # if str(is_paidu_text) == '正在排队':
+        #     bf.outPutErrorMyLog("正在排队，重新开始")
+        #     continue
+
+        for i in range(0, 2):  # 给2次，点击弹出的弹框
+            # 突破200万，中秋祭典
+            # 中秋祭典
+            bf.delaytime(5)  # 等待5秒
+            # 中秋祭典
+            pre_shouye = '%s/prepicture/jinribuzaixianshi.png' % current_file_path
+            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye, prebilv=0.9,
+                                                                     clickpoint_x=1740, clickpoint_y=240,
+                                                                     jiepingpoint_x=298,
+                                                                     jiepingpoint_y=806,
+                                                                     jiepingkongjian_width=190,
+                                                                     jiepingkongjian_height=50,
+                                                                     is_for_coutinue=True)  # 点击中秋祭典中的x,关闭图片
+            if str(is_paidu_text) == '正在排队':
+                bf.outPutErrorMyLog("正在排队，重新开始")
+                break  # 终止for循环
+
+        if str(is_paidu_text) == '正在排队':
+            bf.outPutErrorMyLog("正在排队，重新开始")
+            self.returntext = '重新主循环'
+            return '重新主循环'
+
+        self.returntext = ''
+
+    def caiJi(self):
+
+
+        # # 激进的圣光
+        # bf.delaytime(5)  #等待5秒
+        # #激进的圣光
+        # pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
+        # is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
+        #                                                          clickpoint_x=1740,clickpoint_y=240,
+        #                                                          jiepingpoint_x=298,
+        #                                                          jiepingpoint_y=806,
+        #                                                          jiepingkongjian_width=190,
+        #                                                          jiepingkongjian_height=50)   #点击激进的圣光中x,关闭图片
+        # if str(is_paidu_text) == '正在排队':
+        #     bf.outPutErrorMyLog("正在排队，重新开始")
+        #     continue
+
+        # # # 升级祝福礼
+        # bf.delaytime(5)  #等待5秒
+        # # #升级祝福礼
+        # pre_shouye = '%s/prepicture/shengjizhufuli.png'%current_file_path
+        # is_paidu_text =bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.8,point_x=1800,point_y=267)   #点击升级祝福礼
+        # if is_paidu_text == '正在排队':
+        #     bf.outPutErrorMyLog("正在排队，重新开始")
+        #     continue
+        bf = self.bf
+        current_file_path = bf.getCurrentFilePath()
+        # 采收
+        bf.delaytime(5)  # 等待5秒
+        # 采收
+        pre_shouye = '%s/prepicture/caishou.png' % current_file_path
+        is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye, prebilv=0.7,
+                                                                 clickpoint_x=892, clickpoint_y=1005,
+                                                                 jiepingpoint_x=938,
+                                                                 jiepingpoint_y=930,
+                                                                 jiepingkongjian_width=96,
+                                                                 jiepingkongjian_height=34)  # 点击采收
+        if str(is_paidu_text) == '正在排队':
+            bf.outPutErrorMyLog("正在排队，重新开始")
+            self.returntext = '重新主循环'
+            return '重新主循环'
+        bf.delaytime(5)  # 等待5秒
+        bf.d.click(1009, 808)  # 撤去采收完成的弹框
+        self.returntext = ''
+
+    def miePing(self):
+        bf =self.bf
+        bf.meiping()
+        bf.stopapp()
+        self.returntext = ''
+
+
+    def caiJiDef(self):
+        self.jiuRuZhuYe()
+        self.caiJi()
+        self.miePing()
+
+    def shengJiJiNeng(self):
+        bf = self.bf
+        current_file_path = bf.getCurrentFilePath()
+        # 英雄头像
+        # 点击英雄头像
+        bf.delaytime(5)  # 等待5秒
+        # 英雄头像
+        pre_shouye = '%s/prepicture/yingxiongtouxiang.png' % current_file_path
+        is_paidu_text = bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.1, point_x=138,
+                                                      point_y=295)  # 点击英雄头像
+        if str(is_paidu_text) == '正在排队':
+            bf.outPutErrorMyLog("正在排队，重新开始")
+            self.returntext = '重新主循环'
+            return '重新主循环'
+
+        # 技能
+        # 点击技能
+        bf.delaytime(5)  # 等待5秒
+        # 技能
+        pre_shouye = '%s/prepicture/jineng.png' % current_file_path
+        is_paidu_text = bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.1, point_x=136,
+                                                      point_y=535)  # 点击技能
+        if str(is_paidu_text) == '正在排队':
+            bf.outPutErrorMyLog("正在排队，重新开始")
+            self.returntext = '重新主循环'
+            return '重新主循环'
+
+        #点击技能
+        #点击技能1
+        count_xunhuan = 1
+        for i in range(0,20):
+            jineng_one_result = bf.handle_jineng_one()
+            if str(jineng_one_result) == '技能点不足':
+                break  #退出循环
+            if str(jineng_one_result) == '升级技能1':
+                continue #继续循环
+            if str(jineng_one_result) == '当前最高':
+                bf.outPutMyLog("继续下一个技能或者下一个人")
+                bf.outPutMyLog("暂且升级继续二技能")
+                break  #退出一技能处理循环
+            if str(jineng_one_result) == '正在排队':
+                self.returntext = '重新主循环'
+                return '重新主循环'
+            count_xunhuan = count_xunhuan +1
+
+        #点击技能2
+        for i in range(count_xunhuan,20):
+            jineng_two_result = bf.handle_jineng_two()
+            if str(jineng_two_result) == '技能点不足':
+                break  #退出循环
+            if str(jineng_two_result) == '升级技能2':
+                continue #继续循环
+            if str(jineng_two_result) == '当前最高':
+                bf.outPutMyLog("继续下一个技能或者下一个人")
+                bf.outPutMyLog("暂且升级继续二技能")
+                break  #退出一技能处理循环
+            if str(jineng_two_result) == '正在排队':
+                self.returntext = '重新主循环'
+                return '重新主循环'
+            count_xunhuan = count_xunhuan +1
+
+        #一个人的技能1和技能2处理完成后
+        self.returntext = ''   #设置位正常结束
+
+
+
+        # is_while_break = False
+        # while True:   #出现技能点不足时，就终止升级技能循环
+        #     # 点击第一个人
+        #     first_x = 477
+        #     forst_y = 962
+        #     bf.clickGuDingDian(first_x, forst_y)
+        #     bf.delaytime(2)  # 等2秒
+        #
+        #     # 升级一技能
+        #     # 点击升级一技能，直到
+        #     bf.delaytime(5)  # 等待5秒
+        #     # 升级一技能
+        #     #点击技能升级前判断
+        #     pre_shouye = '%s/prepicture/jinnengshengji.png' % current_file_path
+        #     # quedingimage = '%s/prepicture/queding.png' % current_file_path
+        #     is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye, prebilv=0.9,
+        #                                                          clickpoint_x=1740, clickpoint_y=220,
+        #                                                          jiepingpoint_x=86,
+        #                                                          jiepingpoint_y=36,
+        #                                                          jiepingkongjian_width=190,
+        #                                                          jiepingkongjian_height=110)  # 点击一技能
+        #
+        #
+        #
+        #     pre_shouye = '%s/prepicture/jinnengshengji.png' % current_file_path
+        #     # quedingimage = '%s/prepicture/queding.png' % current_file_path
+        #     is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye, prebilv=0.9,
+        #                                                          clickpoint_x=1740, clickpoint_y=220,
+        #                                                          jiepingpoint_x=86,
+        #                                                          jiepingpoint_y=36,
+        #                                                          jiepingkongjian_width=190,
+        #                                                          jiepingkongjian_height=110)  # 点击一技能
+        #     is_paidu_text = bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797,
+        #                                                                  point_y=305, quedingimage=quedingimage)
+        #     if str(is_paidu_text) == '正在排队':
+        #         bf.outPutErrorMyLog("正在排队，重新开始")
+        #         self.returntext = '重新主循环'
+        #         return '重新主循环'
+        #
+        #
+        #     # 升级一技能之判断一技能是否达到最高
+        #     pre_shouye = '%s/prepicture/dangqianzuigao.png' % current_file_path
+        #     quedingimage = '%s/prepicture/queding.png' % current_file_path
+        #     is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye, prebilv=0.9,
+        #                                                          clickpoint_x=1797, clickpoint_y=305,
+        #                                                          jiepingpoint_x=1690,
+        #                                                          jiepingpoint_y=210,
+        #                                                          jiepingkongjian_width=190,
+        #                                                          jiepingkongjian_height=110)  # 点击一技能
+        #
+        #     is_paidu_text = bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797,
+        #                                                                  point_y=305, quedingimage=quedingimage)
+        #     if str(is_paidu_text) == '正在排队':
+        #         bf.outPutErrorMyLog("正在排队，重新开始")
+        #         self.returntext = '重新主循环'
+        #         return '重新主循环'
+        #
+        #     # 升级二技能
+        #     # 点击升级二技能，直到
+        #     bf.delaytime(5)  # 等待5秒
+        #     # 升级一技能
+        #     pre_shouye = '%s/prepicture/shengjijinengone.png' % current_file_path
+        #     quedingimage = '%s/prepicture/queding.png' % current_file_path
+        #     is_paidu_text = bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797,
+        #                                                                  point_y=505, quedingimage=quedingimage)
+        #     if str(is_paidu_text) == '正在排队':
+        #         bf.outPutErrorMyLog("正在排队，重新开始")
+        #         self.returntext = '重新主循环'
+        #         return '重新主循环'
+        #
+        #
+        #     # 滑动
+        #     di_x = 1497
+        #     di_y = 506
+        #     ding_x = di_x
+        #     ding_y = 155
+        #     bf.d.swipe(di_x, di_y, ding_x, ding_y, 2)
+        #
+        #     # 升级三技能
+        #     # 点击升级一技能，直到
+        #     bf.delaytime(500)  # 等待5秒
+        #     # 升级一技能
+        #     pre_shouye = '%s/prepicture/shengjijinengone.png' % current_file_path
+        #     quedingimage = '%s/prepicture/queding.png' % current_file_path
+        #     is_paidu_text = bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.9, point_x=1797,
+        #                                                                  point_y=305, quedingimage=quedingimage)
+        #     if str(is_paidu_text) == '正在排队':
+        #         bf.outPutErrorMyLog("正在排队，重新开始")
+        #         self.returntext = '重新主循环'
+        #         return '重新主循环'
+        #
+        #     # 回去滑动
+        #     di_x = 1497
+        #     di_y = 155
+        #     ding_x = di_x
+        #     ding_y = 506
+        #     bf.d.swipe(di_x, di_y, ding_x, ding_y, 2)
+
+
+    def shengJiJiNengDef(self):
+        self.jiuRuZhuYe()
+        self.shengJiJiNeng()
+        self.miePing()
+
 
 
 if __name__ == "__main__":
@@ -649,219 +1082,30 @@ if __name__ == "__main__":
         outdevice = "192.168.1.100:5555"
         apppacakagename = "com.superhgame.rpg.emma"
 
-        bf = BaseFrame(outdevice=outdevice, apppacakagename=apppacakagename)
-        # bf.findbytext_and_click(outpretoastmessage='',text="Show QR")
-        # dv = bf.getdeviceinfo()
-        # print(dv["model"])
-        # print(dv["version"])
-        # print(dv["display"]["width"])
-        # print(dv["display"]["height"])
         while True:
-            bf.outPutMyLog('开始执行')
-            is_liangping = bf.is_liang_ping()
-            bf.delaytime(2)
-            if is_liangping:
-                pass
+            try:
+                #采集
+                cjc = CaiJiClass(outdevice=outdevice,apppacakagename=apppacakagename)
+                cjc.caiJiDef()
+                is_continue_text =cjc.returntext
+                if is_continue_text == '重新主循环':
+                    continue
+
+                #升级技能点
+                cjc = CaiJiClass(outdevice=outdevice,apppacakagename=apppacakagename)
+                cjc.shengJiJiNengDef()
+                is_continue_text =cjc.returntext
+                if is_continue_text == '重新主循环':
+                    continue
+            except Exception as e:
+                print("采集或升级技能出错，原因【%s】"%str(e))
+                continue
             else:
-                bf.liangping()   #亮屏
-                bf.delaytime(2)
-                bf.from_down_to_up()   #上划解锁
-                bf.delaytime(2)
-
-            bf.startapp()  #启动应用
-            #判断是否加载出主页面
-            #截屏
-            bf.delaytime(20)  #等待5秒
-            current_file_path = bf.getCurrentFilePath()
-            pre_shouye  = '%s/prepicture/shouye.png'%current_file_path
-            is_paidu_text = bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.9,point_x=10,point_y=10)   #首页点击
-            if str(is_paidu_text) == '正在排队' or str(is_paidu_text) == '重新启动':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            bf.delaytime(20)  #等待5秒
-            #进入游戏点击
-            pre_shouye = '%s/prepicture/jinruyouxi.png'%current_file_path
-            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-                                                                     clickpoint_x=936,clickpoint_y=1000,
-                                                                     jiepingpoint_x=798,
-                                                                     jiepingpoint_y=975,
-                                                                     jiepingkongjian_width=312,
-                                                                     jiepingkongjian_height=87)   #点击进入游戏
-            if str(is_paidu_text) == '正在排队' or str(is_paidu_text) == '重新启动':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            bf.delaytime(20)  # 等待5秒
-
-            #有三个登录领取礼包
-            for i in range(0,5):
-                bf.clickGuDingDian(1809,251)
-                bf.delaytime(2)
-                bf.clickGuDingDian(1855, 86)
-                bf.delaytime(2)
-                bf.clickGuDingDian(1855, 86)
-                bf.delaytime(2)
-
-
-            # # 秘密召唤1
-            # bf.delaytime(20)  #等待5秒
-            # #秘密召唤
-            # pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
-            # is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-            #                                                          clickpoint_x=1740,clickpoint_y=240,
-            #                                                          jiepingpoint_x=298,
-            #                                                          jiepingpoint_y=806,
-            #                                                          jiepingkongjian_width=190,
-            #                                                          jiepingkongjian_height=50)     #点击秘密召唤中的x,关闭图片
-            # if str(is_paidu_text) == '正在排队':
-            #     bf.outPutErrorMyLog("正在排队，重新开始")
-            #     continue
-
-
-            for i in range(0,2):   #给2次，点击弹出的弹框
-                #突破200万，中秋祭典
-                # 中秋祭典
-                bf.delaytime(5)  #等待5秒
-                #中秋祭典
-                pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
-                is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-                                                                         clickpoint_x=1740,clickpoint_y=240,
-                                                                         jiepingpoint_x=298,
-                                                                         jiepingpoint_y=806,
-                                                                         jiepingkongjian_width=190,
-                                                                         jiepingkongjian_height=50,
-                                                                         is_for_coutinue=True)   #点击中秋祭典中的x,关闭图片
-                if str(is_paidu_text) == '正在排队':
-                    bf.outPutErrorMyLog("正在排队，重新开始")
-                    break   #终止for循环
-
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            # # 激进的圣光
-            # bf.delaytime(5)  #等待5秒
-            # #激进的圣光
-            # pre_shouye = '%s/prepicture/jinribuzaixianshi.png'%current_file_path
-            # is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.9,
-            #                                                          clickpoint_x=1740,clickpoint_y=240,
-            #                                                          jiepingpoint_x=298,
-            #                                                          jiepingpoint_y=806,
-            #                                                          jiepingkongjian_width=190,
-            #                                                          jiepingkongjian_height=50)   #点击激进的圣光中x,关闭图片
-            # if str(is_paidu_text) == '正在排队':
-            #     bf.outPutErrorMyLog("正在排队，重新开始")
-            #     continue
-
-            # # # 升级祝福礼
-            # bf.delaytime(5)  #等待5秒
-            # # #升级祝福礼
-            # pre_shouye = '%s/prepicture/shengjizhufuli.png'%current_file_path
-            # is_paidu_text =bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.8,point_x=1800,point_y=267)   #点击升级祝福礼
-            # if is_paidu_text == '正在排队':
-            #     bf.outPutErrorMyLog("正在排队，重新开始")
-            #     continue
-
-
-            # 采收
-            bf.delaytime(5)  #等待5秒
-            #采收
-            pre_shouye = '%s/prepicture/caishou.png'%current_file_path
-            is_paidu_text = bf.wait_and_compare_bufenimage_and_click(preimage=pre_shouye,prebilv=0.7,
-                                                                         clickpoint_x=892,clickpoint_y=1005,
-                                                                         jiepingpoint_x=938,
-                                                                         jiepingpoint_y=930,
-                                                                         jiepingkongjian_width=96,
-                                                                         jiepingkongjian_height=34)   #点击采收
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-            bf.delaytime(5)  #等待5秒
-            bf.d.click(1009,808)   #撤去采收完成的弹框
-
-
-            #英雄头像
-            #点击英雄头像
-            bf.delaytime(5)  #等待5秒
-            #采收
-            pre_shouye = '%s/prepicture/yingxiongtouxiang.png'%current_file_path
-            is_paidu_text =bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.1,point_x=138,point_y=295)   #点击英雄头像
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-
-            #技能
-            #点击技能
-            bf.delaytime(5)  #等待5秒
-            #技能
-            pre_shouye = '%s/prepicture/jineng.png'%current_file_path
-            is_paidu_text =bf.wait_and_conpate_and_click(preimage=pre_shouye, prebilv=0.1,point_x=136,point_y=535)   #点击技能
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            #点击第一个人
-            first_x = 477
-            forst_y = 962
-            bf.clickGuDingDian(first_x, first_x)
-            bf.delaytime(2)  #等2秒
-
-
-            #升级一技能
-            #点击升级一技能，直到
-            bf.delaytime(5)  #等待5秒
-            #升级一技能
-            pre_shouye = '%s/prepicture/shengjijinengone.png'%current_file_path
-            quedingimage =  '%s/prepicture/queding.png'%current_file_path
-            is_paidu_text =bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797, point_y=305, quedingimage=quedingimage)
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            #升级二技能
-            #点击升级二技能，直到
-            bf.delaytime(5)  #等待5秒
-            #升级一技能
-            pre_shouye = '%s/prepicture/shengjijinengone.png'%current_file_path
-            quedingimage =  '%s/prepicture/queding.png'%current_file_path
-            is_paidu_text =bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797, point_y=505, quedingimage=quedingimage)
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            break  #终止循环
-
-            #滑动
-            di_x = 1497
-            di_y = 574
-            ding_x = di_x
-            ding_y = 85
-            self.d.swipe(di_x, di_y, ding_x, ding_y, 2)
-
-            #升级三技能
-            #点击升级一技能，直到
-            bf.delaytime(5)  #等待5秒
-            #升级一技能
-            pre_shouye = '%s/prepicture/shengjijinengone.png'%current_file_path
-            quedingimage =  '%s/prepicture/queding.png'%current_file_path
-            is_paidu_text =bf.wait_and_conpate_and_click_and_loop_click(preimage=pre_shouye, prebilv=0.1, point_x=1797, point_y=305, quedingimage=quedingimage)
-            if str(is_paidu_text) == '正在排队':
-                bf.outPutErrorMyLog("正在排队，重新开始")
-                continue
-
-            #回去滑动
-            di_x = 1497
-            di_y = 85
-            ding_x = di_x
-            ding_y = 574
-            self.d.swipe(di_x, di_y, ding_x, ding_y, 2)
-
-
-        bf.outPutMyLog('成功完成')
-
+                print('采集或升级技能成功完成')
+                break  #终止循环
+        print("即将睡一小时，准备下次循环")
         time.sleep(3600)#睡一小时
+
 
 
 

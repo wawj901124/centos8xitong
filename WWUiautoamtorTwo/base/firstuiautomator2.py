@@ -7,5 +7,11 @@ print(d.info)
 
 # adbstartappcmd = "adb shell am start com.superhgame.rpg.emma/com.prime31.UnityPlayerNativeActivity"
 # # os.popen(adbstartappcmd)
-d.screenshot("10.png")
+# d.screenshot("10.png")
+# 滑动
+di_x = 1497
+di_y = 506
+ding_x = di_x
+ding_y = 155
+d.swipe(di_x, di_y, ding_x, ding_y, 2)
 
